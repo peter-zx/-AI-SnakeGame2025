@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇游戏</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <span id="score">得分: 0</span>
+        </div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="controls">
+            <button id="startButton">开始游戏</button>
+            <button id="pauseButton">暂停</button>
+            <label>速度: <input type="range" id="speedSlider" min="50" max="200" value="100"></label>
+            <label>蛇颜色: <input type="color" id="snakeColor" value="#00FF00"></label>
+            <label>食物颜色: <input type="color" id="foodColor" value="#FF0000"></label>
+        </div>
+    </div>
+    <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+    <audio id="eatSound" src="assets/eat.mp3"></audio>
+    <audio id="gameOverSound" src="assets/gameover.mp3"></audio>
+    <script src="game.js"></script>
+</body>
+</html>
