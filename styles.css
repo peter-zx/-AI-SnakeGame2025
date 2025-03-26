@@ -84,3 +84,36 @@ input[type="color"] {
     border: none;
     cursor: pointer;
 }
+
+/* 前面的样式保持不变，新增以下内容 */
+.star-options {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.star-options.hidden {
+    display: none;
+}
+
+.star-options button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.star-options button:hover {
+    background-color: #1976D2;
+}
