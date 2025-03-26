@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #e0f7fa; /* 默认背景，主题切换时会被覆盖 */
+    background-color: #e0f7fa;
     font-family: Arial, sans-serif;
 }
 
@@ -13,7 +13,7 @@ body {
     position: relative;
     width: 960px;
     height: 540px;
-    background-color: #e0f7fa; /* 默认柔和主题背景，JS 会动态更新 */
+    background-color: #e0f7fa;
     border: 2px solid #333;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -43,6 +43,12 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 15px;
+    transition: opacity 0.3s ease;
+}
+
+.controls.hidden {
+    opacity: 0;
+    pointer-events: none; /* 隐藏时不可点击 */
 }
 
 button {

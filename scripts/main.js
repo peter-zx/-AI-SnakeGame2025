@@ -3,8 +3,9 @@ document.getElementById("startButton").addEventListener("click", () => {
     resetGame();
     document.getElementById("pauseButton").textContent = "暂停";
     document.getElementById("bgm").play().catch(e => console.error("背景音乐播放失败:", e));
-    draw();
-    move();
+    document.querySelector(".controls").classList.add("hidden");
+    draw(config, snake, food, extraFoods, star, document.getElementById("gameCanvas").width / config.gridSize, document.getElementById("gameCanvas").height / config.gridSize, isPaused, gameOver, dx, dy);
+    gameLoop();
 });
 
 document.getElementById("pauseButton").addEventListener("click", () => {
@@ -12,10 +13,15 @@ document.getElementById("pauseButton").addEventListener("click", () => {
         !document.getElementById("settingsModal").classList.contains("hidden")) return;
     isPaused = !isPaused;
     document.getElementById("pauseButton").textContent = isPaused ? "继续" : "暂停";
-    if (isPaused) document.getElementById("bgm").pause();
-    else document.getElementById("bgm").play().catch(e => console.error("背景音乐播放失败:", e));
-    draw();
-    if (!isPaused) move();
+    if (isPaused) {
+        document.getElementById("bgm").pause();
+        document.querySelector(".controls").classList.remove("hidden");
+    } else {
+        document.getElementById("bgm").play().catch(e => console.error("背景音乐播放失败:", e));
+        document.querySelector(".controls").classList.add("hidden");
+    }
+    draw(config, snake, food, extraFoods, star, document.getElementById("gameCanvas").width / config.gridSize, document.getElementById("gameCanvas").height / config.gridSize, isPaused, gameOver, dx, dy);
+    if (!isPaused) gameLoop();
 });
 
 document.addEventListener("keydown", (event) => {
@@ -29,12 +35,18 @@ document.addEventListener("keydown", (event) => {
             !document.getElementById("settingsModal").classList.contains("hidden")) return;
         isPaused = !isPaused;
         document.getElementById("pauseButton").textContent = isPaused ? "继续" : "暂停";
-        if (isPaused) document.getElementById("bgm").pause();
-        else document.getElementById("bgm").play().catch(e => console.error("背景音乐播放失败:", e));
-        draw();
-        if (!isPaused) move();
+        if (isPaused) {
+            document.getElementById("bgm").pause();
+            document.querySelector(".controls").classList.remove("hidden");
+        } else {
+            document.getElementById("bgm").play().catch(e => console.error("背景音乐播放失败:", e));
+            document.querySelector(".controls").classList.add("hidden");
+        }
+        draw(config, snake, food, extraFoods, star, document.getElementById("gameCanvas").width / config.gridSize, document.getElementById("gameCanvas").height / config.gridSize, isPaused, gameOver, dx, dy);
+        if (!isPaused) gameLoop();
     }
 });
 
-// 初始绘制
-draw();
+// 初始化
+updateConfig();
+draw(config, snake, food, extraFoods, star, document.getElementById("gameCanvas").width / config.gridSize, document.getElementById("gameCanvas").height / config.gridSize, isPaused, gameOver, dx, dy);
