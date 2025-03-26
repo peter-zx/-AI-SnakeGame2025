@@ -85,7 +85,20 @@ input[type="color"] {
     cursor: pointer;
 }
 
-/* 前面的样式保持不变，新增以下内容 */
+.key-config {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.key-config input {
+    width: 30px;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
 .star-options {
     position: absolute;
     top: 50%;

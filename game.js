@@ -13,12 +13,16 @@ const starOptions = document.getElementById("starOptions");
 const doubleLengthBtn = document.getElementById("doubleLength");
 const addFoodBtn = document.getElementById("addFood");
 const doubleNextBtn = document.getElementById("doubleNext");
+const keyUpInput = document.getElementById("keyUp");
+const keyDownInput = document.getElementById("keyDown");
+const keyLeftInput = document.getElementById("keyLeft");
+const keyRightInput = document.getElementById("keyRight");
 
 const gridSize = 20;
 const tileCount = 20;
 let snake = [{x: 10, y: 10}];
 let food = spawnFood();
-let star = null; // 五角星对象
+let star = null;
 let dx = 0;
 let dy = 0;
 let score = 0;
@@ -26,9 +30,17 @@ let gameOver = false;
 let isPaused = false;
 let gameLoopId = null;
 let speed = parseInt(speedSlider.value);
-let foodEaten = 0; // 吃食物计数
-let doubleNextFood = false; // 下个食物长度翻倍效果
-let extraFoods = []; // 存储额外食物的数组
+let foodEaten = 0;
+let doubleNextFood = false;
+let extraFoods = [];
+
+// 默认快捷键映射
+let keyMap = {
+    up: keyUpInput.value.toUpperCase(),
+    down: keyDownInput.value.toUpperCase(),
+    left: keyLeftInput.value.toUpperCase(),
+    right: keyRightInput.value.toUpperCase()
+};
 
 // 检查音频加载
 bgm.onerror = () => console.error("背景音乐加载失败，请检查 assets/bgm.mp3");
@@ -65,7 +77,6 @@ function resetGame() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 绘制网格
     ctx.strokeStyle = "#eee";
     for (let i = 0; i < tileCount; i++) {
         for (let j = 0; j < tileCount; j++) {
@@ -73,23 +84,19 @@ function draw() {
         }
     }
 
-    // 绘制蛇
     ctx.fillStyle = snakeColorPicker.value;
     snake.forEach(segment => {
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
     });
 
-    // 绘制主食物
     ctx.fillStyle = foodColorPicker.value;
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
 
-    // 绘制额外食物
     extraFoods.forEach(extra => {
         ctx.fillStyle = foodColorPicker.value;
         ctx.fillRect(extra.x * gridSize, extra.y * gridSize, gridSize - 2, gridSize - 2);
     });
 
-    // 绘制五角星
     if (star) {
         ctx.fillStyle = "yellow";
         ctx.beginPath();
@@ -102,7 +109,6 @@ function draw() {
         ctx.fill();
     }
 
-    // 绘制界面文字
     if (snake.length === 1 && dx === 0 && dy === 0 && !gameOver) {
         ctx.fillStyle = "black";
         ctx.font = "30px Arial";
@@ -133,7 +139,6 @@ function move() {
     const head = {x: snake[0].x + dx, y: snake[0].y + dy};
     snake.unshift(head);
 
-    // 检查是否吃到主食物
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         foodEaten += 1;
@@ -142,30 +147,23 @@ function move() {
             const currentLength = snake.length - 1;
             for (let i = 0; i < currentLength; i++) snake.push({...snake[snake.length - 1]});
             doubleNextFood = false;
-            console.log("下个食物长度翻倍生效，当前长度:", snake.length);
         }
         food = spawnFood();
         eatSound.play().catch(e => console.error("吃食物音效播放失败:", e));
         if (foodEaten % 5 === 0) star = spawnStar();
-    } 
-    // 检查是否吃到额外食物
-    else if (extraFoods.some(f => f.x === head.x && f.y === head.y)) {
+    } else if (extraFoods.some(f => f.x === head.x && f.y === head.y)) {
         score += 10;
         extraFoods = extraFoods.filter(f => f.x !== head.x || f.y !== head.y);
         scoreDisplay.textContent = `得分: ${score}`;
         eatSound.play().catch(e => console.error("吃食物音效播放失败:", e));
-    } 
-    // 检查是否吃到五角星
-    else if (star && head.x === star.x && head.y === star.y) {
+    } else if (star && head.x === star.x && head.y === star.y) {
         star = null;
         isPaused = true;
         starOptions.classList.remove("hidden");
-        console.log("吃到五角星，暂停并显示选择界面");
     } else {
         snake.pop();
     }
 
-    // 检查碰撞
     if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount ||
         snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)) {
         gameOver = true;
@@ -181,11 +179,23 @@ function move() {
 }
 
 document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowUp" && dy === 0) { dx = 0; dy = -1; }
-    else if (event.key === "ArrowDown" && dy === 0) { dx = 0; dy = 1; }
-    else if (event.key === "ArrowLeft" && dx === 0) { dx = -1; dy = 0; }
-    else if (event.key === "ArrowRight" && dx === 0) { dx = 1; dy = 0; }
+    const key = event.key.toUpperCase();
+    if (key === keyMap.up && dy === 0) { dx = 0; dy = -1; }
+    else if (key === keyMap.down && dy === 0) { dx = 0; dy = 1; }
+    else if (key === keyMap.left && dx === 0) { dx = -1; dy = 0; }
+    else if (key === keyMap.right && dx === 0) { dx = 1; dy = 0; }
     else if (event.key === " " && !gameOver) { togglePause(); }
+});
+
+// 动态更新快捷键
+[keyUpInput, keyDownInput, keyLeftInput, keyRightInput].forEach(input => {
+    input.addEventListener("input", () => {
+        keyMap.up = keyUpInput.value.toUpperCase();
+        keyMap.down = keyDownInput.value.toUpperCase();
+        keyMap.left = keyLeftInput.value.toUpperCase();
+        keyMap.right = keyRightInput.value.toUpperCase();
+        console.log("快捷键更新:", keyMap); // 调试信息
+    });
 });
 
 startButton.addEventListener("click", () => {
@@ -212,10 +222,9 @@ doubleLengthBtn.addEventListener("click", () => {
     for (let i = 0; i < currentLength; i++) {
         snake.push({...snake[snake.length - 1]});
     }
-    console.log("选择长度翻倍，当前长度:", snake.length);
     starOptions.classList.add("hidden");
     isPaused = false;
-    draw(); // 立即绘制更新后的蛇
+    draw();
     move();
 });
 
@@ -224,21 +233,18 @@ addFoodBtn.addEventListener("click", () => {
         const newFood = spawnFood();
         extraFoods.push(newFood);
     }
-    console.log("选择加5个食物，当前额外食物数量:", extraFoods.length);
-    starOptions.classList.add("hidden");
-    isPaused = false;
-    draw(); // 立即绘制新食物
-    move();
-});
-
-doubleNextBtn.addEventListener("click", () => {
-    doubleNextFood = true;
-    console.log("选择下个食物长度翻倍，已激活");
     starOptions.classList.add("hidden");
     isPaused = false;
     draw();
     move();
 });
 
-// 初始绘制
+doubleNextBtn.addEventListener("click", () => {
+    doubleNextFood = true;
+    starOptions.classList.add("hidden");
+    isPaused = false;
+    draw();
+    move();
+});
+
 draw();
