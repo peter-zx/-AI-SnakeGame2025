@@ -28,6 +28,7 @@ let gameLoopId = null;
 let speed = parseInt(speedSlider.value);
 let foodEaten = 0; // 吃食物计数
 let doubleNextFood = false; // 下个食物长度翻倍效果
+let extraFoods = []; // 存储额外食物的数组
 
 // 检查音频加载
 bgm.onerror = () => console.error("背景音乐加载失败，请检查 assets/bgm.mp3");
@@ -46,6 +47,7 @@ function resetGame() {
     snake = [{x: 10, y: 10}];
     food = spawnFood();
     star = null;
+    extraFoods = [];
     dx = 0;
     dy = 0;
     score = 0;
@@ -77,9 +79,15 @@ function draw() {
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
     });
 
-    // 绘制食物
+    // 绘制主食物
     ctx.fillStyle = foodColorPicker.value;
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+    // 绘制额外食物
+    extraFoods.forEach(extra => {
+        ctx.fillStyle = foodColorPicker.value;
+        ctx.fillRect(extra.x * gridSize, extra.y * gridSize, gridSize - 2, gridSize - 2);
+    });
 
     // 绘制五角星
     if (star) {
@@ -125,25 +133,39 @@ function move() {
     const head = {x: snake[0].x + dx, y: snake[0].y + dy};
     snake.unshift(head);
 
+    // 检查是否吃到主食物
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         foodEaten += 1;
         scoreDisplay.textContent = `得分: ${score}`;
         if (doubleNextFood) {
-            for (let i = 0; i < snake.length - 1; i++) snake.push(snake[snake.length - 1]);
+            const currentLength = snake.length - 1;
+            for (let i = 0; i < currentLength; i++) snake.push({...snake[snake.length - 1]});
             doubleNextFood = false;
+            console.log("下个食物长度翻倍生效，当前长度:", snake.length);
         }
         food = spawnFood();
         eatSound.play().catch(e => console.error("吃食物音效播放失败:", e));
         if (foodEaten % 5 === 0) star = spawnStar();
-    } else if (star && head.x === star.x && head.y === star.y) {
+    } 
+    // 检查是否吃到额外食物
+    else if (extraFoods.some(f => f.x === head.x && f.y === head.y)) {
+        score += 10;
+        extraFoods = extraFoods.filter(f => f.x !== head.x || f.y !== head.y);
+        scoreDisplay.textContent = `得分: ${score}`;
+        eatSound.play().catch(e => console.error("吃食物音效播放失败:", e));
+    } 
+    // 检查是否吃到五角星
+    else if (star && head.x === star.x && head.y === star.y) {
         star = null;
         isPaused = true;
         starOptions.classList.remove("hidden");
+        console.log("吃到五角星，暂停并显示选择界面");
     } else {
         snake.pop();
     }
 
+    // 检查碰撞
     if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount ||
         snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)) {
         gameOver = true;
@@ -187,27 +209,34 @@ function togglePause() {
 
 doubleLengthBtn.addEventListener("click", () => {
     const currentLength = snake.length;
-    for (let i = 0; i < currentLength; i++) snake.push(snake[snake.length - 1]);
+    for (let i = 0; i < currentLength; i++) {
+        snake.push({...snake[snake.length - 1]});
+    }
+    console.log("选择长度翻倍，当前长度:", snake.length);
     starOptions.classList.add("hidden");
     isPaused = false;
+    draw(); // 立即绘制更新后的蛇
     move();
 });
 
 addFoodBtn.addEventListener("click", () => {
     for (let i = 0; i < 5; i++) {
         const newFood = spawnFood();
-        ctx.fillStyle = foodColorPicker.value;
-        ctx.fillRect(newFood.x * gridSize, newFood.y * gridSize, gridSize - 2, gridSize - 2);
+        extraFoods.push(newFood);
     }
+    console.log("选择加5个食物，当前额外食物数量:", extraFoods.length);
     starOptions.classList.add("hidden");
     isPaused = false;
+    draw(); // 立即绘制新食物
     move();
 });
 
 doubleNextBtn.addEventListener("click", () => {
     doubleNextFood = true;
+    console.log("选择下个食物长度翻倍，已激活");
     starOptions.classList.add("hidden");
     isPaused = false;
+    draw();
     move();
 });
 
