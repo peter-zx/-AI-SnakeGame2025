@@ -1,22 +1,36 @@
-function showSettings() {
+document.getElementById("settingsButton").addEventListener("click", () => {
     document.getElementById("settingsModal").classList.remove("hidden");
     isPaused = true;
     document.getElementById("bgm").pause();
-}
+});
 
-function hideSettings() {
+document.getElementById("closeSettings").addEventListener("click", () => {
     document.getElementById("settingsModal").classList.add("hidden");
     updateConfig();
+    resetGame(); // 重置游戏以适配新网格
     if (!gameOver) {
         isPaused = false;
         document.getElementById("bgm").play().catch(e => console.error("背景音乐播放失败:", e));
         draw();
         move();
     }
-}
+});
 
-document.getElementById("settingsButton").addEventListener("click", showSettings);
-document.getElementById("closeSettings").addEventListener("click", hideSettings);
+document.getElementById("themeSelect").addEventListener("change", () => {
+    const theme = document.getElementById("themeSelect").value;
+    const selectedTheme = themes[theme];
+    document.getElementById("snakeColor").value = selectedTheme.snakeColor;
+    document.getElementById("foodColor").value = selectedTheme.foodColor;
+    document.getElementById("starColor").value = selectedTheme.starColor;
+    updateConfig();
+    draw();
+});
+
+document.getElementById("gridSizeSelect").addEventListener("change", () => {
+    updateConfig();
+    resetGame(); // 网格变化后重置游戏
+    draw();
+});
 
 document.getElementById("doubleLength").addEventListener("click", () => {
     const currentLength = snake.length;
@@ -45,14 +59,4 @@ document.getElementById("doubleNext").addEventListener("click", () => {
 
 document.getElementById("closeGameOver").addEventListener("click", () => {
     document.getElementById("gameOverModal").classList.add("hidden");
-});
-
-document.getElementById("themeSelect").addEventListener("change", () => {
-    const theme = document.getElementById("themeSelect").value;
-    const selectedTheme = themes[theme];
-    document.getElementById("snakeColor").value = selectedTheme.snakeColor;
-    document.getElementById("foodColor").value = selectedTheme.foodColor;
-    document.getElementById("starColor").value = selectedTheme.starColor;
-    updateConfig();
-    draw();
 });

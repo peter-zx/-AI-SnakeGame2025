@@ -1,8 +1,8 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const tileCountX = canvas.width / config.gridSize;  // 32
-const tileCountY = canvas.height / config.gridSize; // 18
+let tileCountX = canvas.width / config.gridSize;
+let tileCountY = canvas.height / config.gridSize;
 let snake = [{x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2)}];
 let food = spawnFood(tileCountX, tileCountY);
 let star = null;
@@ -17,6 +17,8 @@ let foodEaten = 0;
 let doubleNextFood = false;
 
 function resetGame() {
+    tileCountX = canvas.width / config.gridSize;
+    tileCountY = canvas.height / config.gridSize;
     snake = [{x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2)}];
     food = spawnFood(tileCountX, tileCountY);
     star = null;
@@ -32,9 +34,10 @@ function resetGame() {
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = config.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "#eee";
+    ctx.strokeStyle = "#ccc";
     for (let i = 0; i < tileCountX; i++) {
         for (let j = 0; j < tileCountY; j++) {
             ctx.strokeRect(i * config.gridSize, j * config.gridSize, config.gridSize, config.gridSize);
@@ -67,13 +70,13 @@ function draw() {
     }
 
     if (snake.length === 1 && dx === 0 && dy === 0 && !gameOver) {
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "#333";
         ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillText("贪吃蛇", canvas.width / 2, canvas.height / 2 - 20);
         ctx.font = "24px Arial";
         ctx.fillText("按开始游戏", canvas.width / 2, canvas.height / 2 + 20);
-    } else if (isPaused && document.getElementById("starOptions").classList.contains("hidden") && 
+    } else if (isPaused && document.getElementById("starOptions").classList.contains("hidden") &&
                document.getElementById("settingsModal").classList.contains("hidden")) {
         ctx.fillStyle = "gray";
         ctx.font = "40px Arial";

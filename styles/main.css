@@ -1,10 +1,11 @@
 body {
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    background-color: #e0f7fa;
+    background-color: #e0f7fa; /* 默认背景，主题切换时会被覆盖 */
     font-family: Arial, sans-serif;
 }
 
@@ -12,9 +13,11 @@ body {
     position: relative;
     width: 960px;
     height: 540px;
-    background-color: #fff;
+    background-color: #e0f7fa; /* 默认柔和主题背景，JS 会动态更新 */
     border: 2px solid #333;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .score-display {
@@ -23,10 +26,14 @@ body {
     right: 20px;
     font-size: 24px;
     color: #333;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 #gameCanvas {
     display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .controls {
@@ -45,7 +52,17 @@ button {
     border: none;
     border-radius: 5px;
     color: white;
-    transition: background-color 0.3s;
+    background-color: #2196F3;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #1976D2;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
 }
 
 #startButton {
