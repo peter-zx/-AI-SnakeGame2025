@@ -1,11 +1,10 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const gridSize = 20;
-const tileCountX = canvas.width / gridSize;
-const tileCountY = canvas.height / gridSize;
-let snake = [{x: tileCountX / 2, y: tileCountY / 2}];
-let food = spawnFood();
+const tileCountX = canvas.width / config.gridSize;  // 32
+const tileCountY = canvas.height / config.gridSize; // 18
+let snake = [{x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2)}];
+let food = spawnFood(tileCountX, tileCountY);
 let star = null;
 let extraFoods = [];
 let dx = 0;
@@ -17,23 +16,9 @@ let gameLoopId = null;
 let foodEaten = 0;
 let doubleNextFood = false;
 
-function spawnFood() {
-    return {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY)
-    };
-}
-
-function spawnStar() {
-    return {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY)
-    };
-}
-
 function resetGame() {
-    snake = [{x: tileCountX / 2, y: tileCountY / 2}];
-    food = spawnFood();
+    snake = [{x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2)}];
+    food = spawnFood(tileCountX, tileCountY);
     star = null;
     extraFoods = [];
     dx = 0;
@@ -43,7 +28,7 @@ function resetGame() {
     isPaused = false;
     foodEaten = 0;
     doubleNextFood = false;
-    document.getElementById("score").textContent = "得分: 0";
+    document.getElementById("score").textContent = "0";
 }
 
 function draw() {
@@ -52,31 +37,31 @@ function draw() {
     ctx.strokeStyle = "#eee";
     for (let i = 0; i < tileCountX; i++) {
         for (let j = 0; j < tileCountY; j++) {
-            ctx.strokeRect(i * gridSize, j * gridSize, gridSize, gridSize);
+            ctx.strokeRect(i * config.gridSize, j * config.gridSize, config.gridSize, config.gridSize);
         }
     }
 
     ctx.fillStyle = config.snakeColor;
     snake.forEach(segment => {
-        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+        ctx.fillRect(segment.x * config.gridSize, segment.y * config.gridSize, config.gridSize - 2, config.gridSize - 2);
     });
 
     ctx.fillStyle = config.foodColor;
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+    ctx.fillRect(food.x * config.gridSize, food.y * config.gridSize, config.gridSize - 2, config.gridSize - 2);
 
     extraFoods.forEach(extra => {
         ctx.fillStyle = config.foodColor;
-        ctx.fillRect(extra.x * gridSize, extra.y * gridSize, gridSize - 2, gridSize - 2);
+        ctx.fillRect(extra.x * config.gridSize, extra.y * config.gridSize, config.gridSize - 2, config.gridSize - 2);
     });
 
     if (star) {
         ctx.fillStyle = config.starColor;
         ctx.beginPath();
-        ctx.moveTo(star.x * gridSize + gridSize / 2, star.y * gridSize);
-        ctx.lineTo(star.x * gridSize + gridSize, star.y * gridSize + gridSize);
-        ctx.lineTo(star.x * gridSize, star.y * gridSize + gridSize / 3);
-        ctx.lineTo(star.x * gridSize + gridSize, star.y * gridSize + gridSize / 3);
-        ctx.lineTo(star.x * gridSize, star.y * gridSize + gridSize);
+        ctx.moveTo(star.x * config.gridSize + config.gridSize / 2, star.y * config.gridSize);
+        ctx.lineTo(star.x * config.gridSize + config.gridSize, star.y * config.gridSize + config.gridSize);
+        ctx.lineTo(star.x * config.gridSize, star.y * config.gridSize + config.gridSize / 3);
+        ctx.lineTo(star.x * config.gridSize + config.gridSize, star.y * config.gridSize + config.gridSize / 3);
+        ctx.lineTo(star.x * config.gridSize, star.y * config.gridSize + config.gridSize);
         ctx.closePath();
         ctx.fill();
     }
@@ -88,7 +73,8 @@ function draw() {
         ctx.fillText("贪吃蛇", canvas.width / 2, canvas.height / 2 - 20);
         ctx.font = "24px Arial";
         ctx.fillText("按开始游戏", canvas.width / 2, canvas.height / 2 + 20);
-    } else if (isPaused && document.getElementById("starOptions").classList.contains("hidden")) {
+    } else if (isPaused && document.getElementById("starOptions").classList.contains("hidden") && 
+               document.getElementById("settingsModal").classList.contains("hidden")) {
         ctx.fillStyle = "gray";
         ctx.font = "40px Arial";
         ctx.textAlign = "center";
@@ -105,19 +91,19 @@ function move() {
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         foodEaten += 1;
-        document.getElementById("score").textContent = `得分: ${score}`;
+        document.getElementById("score").textContent = score;
         if (doubleNextFood) {
             const currentLength = snake.length - 1;
             for (let i = 0; i < currentLength; i++) snake.push({...snake[snake.length - 1]});
             doubleNextFood = false;
         }
-        food = spawnFood();
+        food = spawnFood(tileCountX, tileCountY);
         document.getElementById("eatSound").play().catch(e => console.error("吃食物音效播放失败:", e));
-        if (foodEaten % 5 === 0) star = spawnStar();
+        if (foodEaten % 5 === 0) star = spawnStar(tileCountX, tileCountY);
     } else if (extraFoods.some(f => f.x === head.x && f.y === head.y)) {
         score += 10;
         extraFoods = extraFoods.filter(f => f.x !== head.x || f.y !== head.y);
-        document.getElementById("score").textContent = `得分: ${score}`;
+        document.getElementById("score").textContent = score;
         document.getElementById("eatSound").play().catch(e => console.error("吃食物音效播放失败:", e));
     } else if (star && head.x === star.x && head.y === star.y) {
         star = null;
@@ -132,7 +118,8 @@ function move() {
         gameOver = true;
         document.getElementById("bgm").pause();
         document.getElementById("gameOverSound").play().catch(e => console.error("结束音效播放失败:", e));
-        showGameOver();
+        document.getElementById("finalScore").textContent = `最终得分: ${score}`;
+        document.getElementById("gameOverModal").classList.remove("hidden");
     }
 
     draw();

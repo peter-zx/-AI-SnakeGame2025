@@ -8,7 +8,8 @@ document.getElementById("startButton").addEventListener("click", () => {
 });
 
 document.getElementById("pauseButton").addEventListener("click", () => {
-    if (gameOver || !document.getElementById("starOptions").classList.contains("hidden")) return;
+    if (gameOver || !document.getElementById("starOptions").classList.contains("hidden") ||
+        !document.getElementById("settingsModal").classList.contains("hidden")) return;
     isPaused = !isPaused;
     document.getElementById("pauseButton").textContent = isPaused ? "继续" : "暂停";
     if (isPaused) document.getElementById("bgm").pause();
@@ -24,7 +25,8 @@ document.addEventListener("keydown", (event) => {
     else if (key === config.keyMap.left && dx === 0) { dx = -1; dy = 0; }
     else if (key === config.keyMap.right && dx === 0) { dx = 1; dy = 0; }
     else if (event.key === " " && !gameOver) {
-        if (!document.getElementById("starOptions").classList.contains("hidden")) return;
+        if (!document.getElementById("starOptions").classList.contains("hidden") ||
+            !document.getElementById("settingsModal").classList.contains("hidden")) return;
         isPaused = !isPaused;
         document.getElementById("pauseButton").textContent = isPaused ? "继续" : "暂停";
         if (isPaused) document.getElementById("bgm").pause();

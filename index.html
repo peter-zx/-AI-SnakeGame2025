@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <title>贪吃蛇游戏</title>
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/settings.css">
-    <link rel="stylesheet" href="styles/gameover.css">
+    <link rel="stylesheet" href="styles/modal.css">
 </head>
 <body>
     <div class="game-container">
-        <div class="header">
-            <span id="score">得分: 0</span>
-        </div>
+        <div class="score-display">得分: <span id="score">0</span></div>
         <canvas id="gameCanvas" width="960" height="540"></canvas>
         <div class="controls">
             <button id="startButton">开始游戏</button>
@@ -20,11 +17,18 @@
         </div>
         <div id="settingsModal" class="modal hidden">
             <div class="modal-content">
-                <h2>游戏设置</h2>
+                <h2>设置</h2>
                 <label>速度: <input type="range" id="speedSlider" min="50" max="200" value="100"></label>
-                <label>蛇颜色: <input type="color" id="snakeColor" value="#00FF00"></label>
-                <label>食物颜色: <input type="color" id="foodColor" value="#FF0000"></label>
-                <label>奖励颜色: <input type="color" id="starColor" value="#FFFF00"></label>
+                <label>主题: 
+                    <select id="themeSelect">
+                        <option value="soft">柔和</option>
+                        <option value="dark">暗色</option>
+                        <option value="pastel">淡彩</option>
+                    </select>
+                </label>
+                <label>蛇颜色: <input type="color" id="snakeColor" value="#A3BFFA"></label>
+                <label>食物颜色: <input type="color" id="foodColor" value="#F9A8D4"></label>
+                <label>奖励颜色: <input type="color" id="starColor" value="#FDE68A"></label>
                 <label>上: <input type="text" id="keyUp" maxlength="1" value="W"></label>
                 <label>下: <input type="text" id="keyDown" maxlength="1" value="S"></label>
                 <label>左: <input type="text" id="keyLeft" maxlength="1" value="A"></label>
@@ -35,14 +39,14 @@
         <div id="gameOverModal" class="modal hidden">
             <div class="modal-content">
                 <h2>游戏结束</h2>
-                <p id="finalScore" class="bold"></p>
-                <p>点击“开始游戏”开始下一局</p>
+                <p id="finalScore" class="bold-score"></p>
+                <p>点击“开始游戏”进入下一局</p>
                 <button id="closeGameOver">关闭</button>
             </div>
         </div>
         <div id="starOptions" class="modal hidden">
             <div class="modal-content">
-                <p>选择奖励:</p>
+                <h3>选择奖励</h3>
                 <button id="doubleLength">长度翻倍</button>
                 <button id="addFood">加5个食物</button>
                 <button id="doubleNext">下个食物长度*2</button>
@@ -53,8 +57,9 @@
     <audio id="eatSound" src="assets/eat.mp3"></audio>
     <audio id="gameOverSound" src="assets/gameover.mp3"></audio>
     <script src="scripts/config.js"></script>
+    <script src="scripts/utils.js"></script>
     <script src="scripts/game.js"></script>
-    <script src="scripts/ui.js"></script>
+    <script src="scripts/settings.js"></script>
     <script src="scripts/main.js"></script>
 </body>
 </html>
